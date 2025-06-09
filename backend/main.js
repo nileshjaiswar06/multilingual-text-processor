@@ -93,15 +93,18 @@ const createWindow = () => {
   });
 
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    const csp = "default-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://localhost:5000";
+    console.log('Applying CSP:', csp);
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        "Content-Security-Policy": ["default-src 'self' 'unsafe-inline'; script-src 'self'"],
+        "Content-Security-Policy": [csp],
       },
     });
   });
 
   mainWindow.loadURL(startURL);
+  console.log('Electron loading URL:', startURL);
 };
 
 // Electron IPC Handlers (unchanged)
