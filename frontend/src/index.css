@@ -304,20 +304,6 @@ body {
   text-align: center;
 }
 
-.github-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.github-link:hover {
-  color: var(--primary-color);
-}
-
 /* Animations */
 @keyframes spin {
   to {
