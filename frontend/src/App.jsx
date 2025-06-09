@@ -198,7 +198,7 @@ const App = () => {
         </div>
 
         <footer className="app-footer">
-          <p>Created by Nilesh</p>
+          <p>Created by Trainee 10</p>
         </footer>
       </div>
     </div>
