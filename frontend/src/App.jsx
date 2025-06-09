@@ -198,15 +198,7 @@ const App = () => {
         </div>
 
         <footer className="app-footer">
-          <a
-            href="https://github.com/nileshjaiswar06/multu-lingual-text-processing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="github-link"
-          >
-            <span className="github-icon">📦</span>
-            View on GitHub
-          </a>
+          <p>Created by Nilesh</p>
         </footer>
       </div>
     </div>
