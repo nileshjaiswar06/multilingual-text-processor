@@ -93,7 +93,7 @@ const createWindow = () => {
   });
 
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    const csp = "default-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' http://localhost:5000";
+    const csp = "default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval'; connect-src 'self' http://localhost:5000";
     console.log('Applying CSP:', csp);
     callback({
       responseHeaders: {
