@@ -50,11 +50,12 @@ api.post("/api/file", upload.single("file"), async (req, res) => {
 
     console.log(`Processing file: ${req.file.originalname} at ${req.file.path}`);
     const allowedTypes = [
-      'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/webm', 'audio/ogg', 'audio/mp4'
+      'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav', 'audio/webm', 'audio/ogg', 'audio/mp4',
+      'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'
     ];
     if (!allowedTypes.includes(req.file.mimetype)) {
       fs.unlinkSync(req.file.path);
-      return res.status(400).json({ error: 'Invalid file type. Please upload an audio file (MP3, WAV, WebM, OGG, or MP4)' });
+      return res.status(400).json({ error: 'Invalid file type. Please upload an audio or video file (MP3, WAV, WebM, OGG, MP4, AVI, MOV)' });
     }
 
     const transcription = await transcribeAudio(req.file.path, req.body.language);
@@ -93,8 +94,28 @@ const createWindow = () => {
   });
 
   mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-    const csp = "default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval'; connect-src 'self' http://localhost:5000";
-    console.log('Applying CSP:', csp);
+    const csp = isDev
+      ? [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-eval' 'unsafe-inline' ws: wss:",
+          "style-src 'self' 'unsafe-inline'",
+          "connect-src 'self' http://localhost:5000 ws: wss:",
+          "media-src 'self' blob: data:",
+          "img-src 'self' data: blob:",
+          "font-src 'self'",
+          "worker-src 'self' blob:"
+        ].join('; ')
+      : [
+          "default-src 'self'",
+          "script-src 'self'",
+          "style-src 'self' 'unsafe-inline'",
+          "connect-src 'self' http://localhost:5000",
+          "media-src 'self' blob: data:",
+          "img-src 'self' data: blob:",
+          "font-src 'self'",
+          "worker-src 'self' blob:"
+        ].join('; ');
+
     callback({
       responseHeaders: {
         ...details.responseHeaders,

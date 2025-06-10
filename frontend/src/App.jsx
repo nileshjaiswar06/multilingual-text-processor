@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./index.css";
 
@@ -18,6 +18,7 @@ const App = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [videoPreview, setVideoPreview] = useState(null);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -26,9 +27,21 @@ const App = () => {
     setLoading(true);
     setTranscription("");
     setError("");
+    setVideoPreview(null);
+
     try {
-      if (!file.type.startsWith("audio/")) {
-        throw new Error("Selected file is not an audio file.");
+      // Check if file is audio or video
+      const isVideo = file.type.startsWith('video/');
+      const isAudio = file.type.startsWith('audio/');
+      
+      if (!isVideo && !isAudio) {
+        throw new Error("Selected file is not an audio or video file.");
+      }
+
+      // If it's a video, create a preview
+      if (isVideo) {
+        const videoUrl = URL.createObjectURL(file);
+        setVideoPreview(videoUrl);
       }
 
       const formData = new FormData();
@@ -46,6 +59,15 @@ const App = () => {
     setLoading(false);
     event.target.value = null;
   };
+
+  // Clean up video preview URL when component unmounts
+  useEffect(() => {
+    return () => {
+      if (videoPreview) {
+        URL.revokeObjectURL(videoPreview);
+      }
+    };
+  }, [videoPreview]);
 
   const startRecording = async () => {
     setIsRecording(true);
@@ -102,7 +124,7 @@ const App = () => {
         <header className="app-header">
           <h1>🎙️ Voice Transcriber</h1>
           <p className="app-description">
-            Transform your voice into text in multiple languages
+            Transform your voice or video audio into text in multiple languages
           </p>
         </header>
 
@@ -132,16 +154,26 @@ const App = () => {
                 className={`file-upload-button ${loading ? "disabled" : ""}`}
               >
                 <span className="upload-icon">📁</span>
-                <span className="upload-text">Upload Audio File</span>
+                <span className="upload-text">Upload Audio/Video File</span>
                 <input
                   id="file-upload"
                   type="file"
-                  accept="audio/*"
+                  accept="audio/*,video/*"
                   onChange={handleFileUpload}
                   disabled={loading}
                 />
               </label>
             </div>
+
+            {videoPreview && (
+              <div className="video-preview-container">
+                <video
+                  src={videoPreview}
+                  controls
+                  className="video-preview"
+                />
+              </div>
+            )}
 
             <div className="recording-container">
               <button
